@@ -2,7 +2,7 @@
 set -e
 # Debian 11/12 - Samba AD DC + Chrony + NFS + Ansible
 
-echo "🔧 Настройка BR-SRV (Debian): Chrony + Samba DC + NFS + Ansible..."
+echo "🔧 Configuring BR-SRV (Debian): Chrony + Samba DC + NFS + Ansible..."
 
 # === Chrony ===
 apt-get update && apt-get install -y chrony
@@ -36,19 +36,19 @@ samba-tool domain provision \
     --option="interfaces=lo ${BR_SRV_IF:-eth0}" \
     --option="bind interfaces only=yes"
 
-systemctl stop smbd nmbd  # Отключаем standalone samba
+systemctl stop smbd nmbd  # Disable standalone Samba
 systemctl disable --now smbd nmbd
 systemctl enable --now samba-ad-dc
 ln -sf /var/lib/samba/private/krb5.conf /etc/krb5.conf
 
-# Пользователи и группа
+# Users and group
 for i in 1 2 3 4 5; do
     samba-tool user create hquser$i 'P@ssw0rd' 2>/dev/null || true
 done
 samba-tool group add hq 2>/dev/null || true
 samba-tool group addmembers hq hquser1,hquser2,hquser3,hquser4,hquser5 2>/dev/null || true
 
-# === NFS Сервер ===
+# === NFS Server ===
 apt-get install -y nfs-kernel-server
 mkdir -p /raid/nfs
 chmod 777 /raid/nfs
@@ -56,7 +56,7 @@ echo "/raid/nfs 192.168.2.0/28(rw,sync,no_subtree_check,no_root_squash)" > /etc/
 exportfs -ra
 systemctl enable --now nfs-kernel-server
 
-# === Ansible + SSH ключи ===
+# === Ansible + SSH Keys ===
 apt-get install -y ansible sshpass openssh-server
 
 cat > /etc/ansible/hosts <<EOF
@@ -83,7 +83,7 @@ host_key_checking = False
 inventory = /etc/ansible/hosts
 EOF
 
-# Crontab
+# Crontab for recovery
 cat > /root/fixafterreboot.sh <<'EOF'
 #!/bin/bash
 sleep 3
@@ -94,4 +94,4 @@ EOF
 chmod +x /root/fixafterreboot.sh
 (crontab -l 2>/dev/null | grep -v "@reboot /root/fixafterreboot.sh"; echo "@reboot /root/fixafterreboot.sh") | crontab -
 
-echo "✅ BR-SRV (Debian) настроен"
+echo "✅ BR-SRV (Debian) configured"
