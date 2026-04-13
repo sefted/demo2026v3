@@ -1,4 +1,6 @@
-10)
+2) Примечание: В Debian для применения настроек VLAN и интерфейсов через ifupdown иногда требуется пакет vlan (apt install -y vlan). Если команда systemctl restart networking отработает некорректно, замените её на ifup -a или systemctl restart systemd-networkd (в зависимости от версии Debian).
+3) 
+
 11) Небольшое примечание: на Debian/Ubuntu служба обычно называется chrony, а не chronyd (последнее характерно для RHEL/CentOS/Fedora). Если скрипт ругнётся на systemctl enable --now chronyd, замените chronyd на chrony. Остальное работает как задумано.
 12) Служба NTP обычно называется chrony, а не chronyd.
 SSH-демон в systemd называется ssh, а не sshd.
