@@ -47,3 +47,8 @@ apt instal iptables iptables-persistent
 mkdir /home/sk cd /home/sk apt instal iptables iptables-persistent
 
 chmod +x (скрипт) ./(скрипт)
+
+
+https://github.com/Zoriss/Aboba
+
+http://88.204.56.234
